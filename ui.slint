@@ -1,0 +1,142 @@
+import { StandardListView, VerticalBox, LineEdit, Button } from "std-widgets.slint";
+export component MainWindow inherits Window {
+    preferred-width: 700px;
+    preferred-height: 500px;
+    title: @tr("T-PIECES Ver0.0");
+    //icon: @image-url("");
+    // 現在選択されているタブのインデックス
+    property <int> active-tab: 0;
+    // メニューバー（既存のもの）
+    MenuBar {
+        Menu {
+            title: @tr("MenuBar" => "ファイル");
+            MenuItem { title: @tr("MenuBar" => "教科を新規作成"); shortcut: @keys(Control + N); }
+            MenuItem { title: @tr("MenuBar" => "教科を開く");    shortcut: @keys(Control + O);  }
+            MenuSeparator {} //----------------------------------------
+            MenuItem { title: @tr("MenuBar" => "上書き保存"); }
+            MenuItem { title: @tr("MenuBar" => "名前を付けて保存"); }
+            MenuSeparator {} //----------------------------------------
+            MenuItem { title: @tr("MenuBar" => "Excel出力");  }
+            MenuItem { title: @tr("MenuBar" => "Excelインポート"); }
+            MenuItem { title: @tr("MenuBar" => "印刷");  }
+            MenuSeparator {} //----------------------------------------
+            MenuItem { title: @tr("MenuBar" => "終了");}
+        }
+        Menu {
+            title: @tr("MenuBar" => "編集");
+            MenuItem { title: @tr("MenuBar" => "元に戻す");   shortcut: @keys(Control + Z);  }
+            MenuItem { title: @tr("MenuBar" => "元に戻すを戻す");   shortcut: @keys(Control + Y);  }
+            MenuSeparator {} //----------------------------------------
+            MenuItem { title: @tr("MenuBar" => "切り取り"); }
+            MenuItem { title: @tr("MenuBar" => "コピー"); }
+            MenuItem { title: @tr("MenuBar" => "貼り付け"); }
+            MenuSeparator {} //----------------------------------------
+            MenuItem { title: @tr("MenuBar" => "検索"); }
+            MenuItem { title: @tr("MenuBar" => "置換"); }
+            MenuSeparator {} //----------------------------------------
+            MenuItem { title: @tr("MenuBar" => "再読み込み"); }
+        }
+        Menu {
+            title: @tr("MenuBar" => "表示");
+            MenuItem { title: @tr("MenuBar" => "クラス別駒表示");   shortcut: @keys(Control + L);  }
+            MenuItem { title: @tr("MenuBar" => "科目別駒表示");   shortcut: @keys(Control + P);  }
+            MenuItem { title: @tr("MenuBar" => "先生別駒表示"); }
+            MenuSeparator {} //----------------------------------------
+            MenuItem { title: @tr("MenuBar" => "禁則駒一覧表示"); }
+            MenuItem { title: @tr("MenuBar" => "教室別一覧表示"); }
+            MenuItem { title: @tr("MenuBar" => "分掌別一覧表示"); }
+            MenuSeparator {} //----------------------------------------
+            MenuItem { title: @tr("MenuBar" => "科目名置換テーブル表示"); }
+        }
+        Menu {
+            title: @tr("MenuBar" => "ヘルプ");
+            MenuItem { title: @tr("MenuBar" => "ヘルプ");   shortcut: @keys(Control + H);  }
+            MenuSeparator {} //----------------------------------------
+            MenuItem { title: @tr("MenuBar" => "バージョン情報"); }
+        }
+    }
+
+    HorizontalLayout {
+        // --- サイドバーエリア ---
+        Rectangle {
+            width: 200px;
+            background: #f0f0f0;
+
+            VerticalLayout {
+                padding: 10px;
+                spacing: 5px;
+                alignment: start;
+
+                // タイトル
+                Text {
+                    text: "MENU";
+                    font-size: 18px;
+                    font-weight: 700;
+                    color: #333;
+                    horizontal-alignment: center;
+                }
+
+                Rectangle { height: 10px; } // スペーサー
+
+                // 自作の簡易メニューボタン
+                // StandardListViewを使うこともできますが、カスタマイズ性が高いこちらがおすすめ
+                for item[i] in [
+                    @tr("教科・科目の設定"), 
+                    @tr("先生・禁則設定"), 
+                    @tr("教室設定"), 
+                    @tr("印刷設定")
+                ] : Rectangle {
+                    height: 40px;
+                    background: active-tab == i ? #0078d4 : transparent;
+                    border-radius: 4px;
+                    
+                    TouchArea {
+                        clicked => { active-tab = i; }
+                    }
+
+                    Text {
+                        x: 15px;
+                        text: item;
+                        color: active-tab == i ? white : black;
+                        vertical-alignment: center;
+                    }
+                }
+                // 下部に余白を詰めるためのスプリング
+                VerticalLayout {} 
+            }
+            // 右側の境界線
+            Rectangle {
+                width: 1px;
+                x: parent.width - 1px;
+                background: #ccc;
+            }
+        }
+
+        // --- メインコンテンツエリア ---
+        Rectangle {
+            background: #f0f0f0;
+            VerticalBox {
+                alignment: start;
+              
+                // タブの切り替え
+                if (active-tab == 0) : VerticalBox {
+                    Text { text: @tr("教科・科目の設定"); font-size: 24px; color: #333; }
+                    Text { text: "ここにクラス別の時間割表などを実装します"; }
+                }
+
+                if (active-tab == 1) : VerticalBox {
+                    Text { text: @tr("先生・禁則設定"); font-size: 24px; color: #333; }
+                }
+
+                if (active-tab == 2) : VerticalBox {
+                    Text { text: @tr("教室設定"); font-size: 24px; color: #333; }
+                }
+
+                if (active-tab == 3) : VerticalBox {
+                    Text { text: @tr("印刷設定"); font-size: 24px; color: #333; }
+                    Button { text: "保存する"; }
+                }
+            }
+        }
+    }
+}
